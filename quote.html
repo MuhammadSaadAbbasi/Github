@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Islamic Quote Slider</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Georgia', serif;
+    }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(135deg, #1b1b1b, #2b542c);
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    .quote-box {
+      background: #333;
+      padding: 2rem;
+      border-radius: 1rem;
+      width: 80%;
+      max-width: 600px;
+      text-align: center;
+      font-size: 1.5rem;
+      box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    }
+
+    .buttons {
+      display: flex;
+      gap: 1rem;
+    }
+
+    button {
+      padding: 0.7rem 2rem;
+      border: none;
+      border-radius: 0.5rem;
+      background-color: #F7CB71;
+      color: black;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background-color: #e0b55f;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="quote-box" id="quoteBox">
+    “Indeed, the help of Allah is near.” — Quran 2:214
+  </div>
+
+  <div class="buttons">
+    <button onclick="prevQuote()">Previous</button>
+    <button onclick="nextQuote()">Next</button>
+  </div>
+
+  <script>
+    const quotes = [
+      "“Indeed, the help of Allah is near.” — Quran 2:214",
+      "“So remember Me; I will remember you.” — Quran 2:152",
+      "“Allah does not burden a soul beyond that it can bear.” — Quran 2:286",
+      "“And He found you lost and guided [you].” — Quran 93:7",
+      "“Do not despair of the mercy of Allah.” — Quran 39:53"
+    ];
+  
+    let currentIndex = 0;
+  
+    const quoteBox = document.getElementById("quoteBox");
+  
+    function showQuote(index) {
+      quoteBox.innerText = quotes[index];
+    }
+  
+    function nextQuote() {
+      currentIndex++;
+      if (currentIndex >= quotes.length) {
+        currentIndex = 0; // loop back
+      }
+      showQuote(currentIndex);
+    }
+  
+    function prevQuote() {
+      currentIndex--;
+      if (currentIndex < 0) {
+        currentIndex = quotes.length - 1; // loop to end
+      }
+      showQuote(currentIndex);
+    }
+  </script>
+  
+
+</body>
+</html>

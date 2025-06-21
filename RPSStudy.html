@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rock Paper Scissors</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      text-align: center;
+      background: linear-gradient(to right, #74ebd5, #9face6);
+      color: #333;
+      padding: 20px;
+      transition: background 0.3s;
+    }
+
+    .dark {
+      background: #121212;
+      color: #f5f5f5;
+    }
+
+    .startScreen, .play, #result {
+      margin: 20px auto;
+    }
+
+    .play, #result {
+      display: none;
+    }
+
+    #result {
+      font-size: 1.2rem;
+      padding: 10px;
+      margin-top: 20px;
+      border-radius: 10px;
+      transition: all 0.4s ease, background-color 0.4s;
+      opacity: 0;
+      transform: scale(0.9);
+    }
+
+    #result.show {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    button {
+      font-size: 1.2rem;
+      padding: 10px 20px;
+      margin: 10px;
+      border: none;
+      border-radius: 8px;
+      background-color: #fff;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    button:hover {
+      animation: pulse 0.5s infinite;
+    }
+
+    button:active {
+      transform: scale(0.95);
+      box-shadow: 0 0 10px #00b4db;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    .score-update {
+      animation: bounce 0.4s ease;
+    }
+
+    @keyframes bounce {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+
+    input {
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Rock 🪨 Paper 📄 Scissors ✂️ Game</h1>
+
+  <button onclick="toggleTheme()">🌙 Toggle Theme</button>
+
+  <div class="startScreen">
+    <input id="name" type="text" placeholder="Enter your name">
+    <button onclick="start()">Start Game</button>
+  </div>
+
+  <div class="play">
+    <h2 id="player">Player : 0</h2>
+    <h2 id="computer">Computer : 0</h2>
+
+    <button onclick="play('rock')">🪨</button>
+    <button onclick="play('paper')">📄</button>
+    <button onclick="play('scissor')">✂️</button>
+
+    <button onclick="end()">End Game</button>
+  </div>
+
+  <p id="result">Choose an option above</p>
+
+  <audio id="win" src="https://www.soundjay.com/human/sounds/applause-01.mp3"></audio>
+  <audio id="lose" src="https://www.soundjay.com/button/sounds/button-10.mp3"></audio>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <script>
+    let score_p = 0;
+    let score_c = 0;
+    let name = "Player";
+
+    function toggleTheme() {
+      document.body.classList.toggle("dark");
+    }
+
+    function start() {
+      name = document.getElementById("name").value || "Player";
+      document.getElementById("player").innerHTML = `${name} : ${score_p}`;
+      document.querySelector(".play").style.display = "block";
+      document.querySelector("#result").style.display = "block";
+      document.querySelector(".startScreen").style.display = "none";
+    }
+
+    function updateScore() {
+      const playerEl = document.getElementById("player");
+      const computerEl = document.getElementById("computer");
+
+      playerEl.innerHTML = `${name} : ${score_p}`;
+      computerEl.innerHTML = `Computer : ${score_c}`;
+
+      playerEl.classList.remove("score-update");
+      computerEl.classList.remove("score-update");
+      void playerEl.offsetWidth; // trigger reflow
+      void computerEl.offsetWidth;
+
+      playerEl.classList.add("score-update");
+      computerEl.classList.add("score-update");
+    }
+
+    function play(option) {
+      const opt = ['rock', 'paper', 'scissor'];
+      const handIcons = { rock: '🪨', paper: '📄', scissor: '✂️' };
+      const comp = Math.floor(Math.random() * 3);
+      const computer = opt[comp];
+
+      const resultEl = document.getElementById("result");
+      resultEl.classList.remove("show");
+
+      setTimeout(() => {
+        let resultText = `Computer: ${handIcons[computer]} vs You: ${handIcons[option]}`;
+
+        if (computer === option) {
+          resultEl.style.backgroundColor = "#f1c40f";
+          resultEl.innerHTML = "It is a tie!<br>" + resultText;
+        } else if (
+          (computer === 'rock' && option === 'scissor') ||
+          (computer === 'scissor' && option === 'paper') ||
+          (computer === 'paper' && option === 'rock')
+        ) {
+          resultEl.style.backgroundColor = "#e74c3c";
+          resultEl.innerHTML = "Computer wins!<br>" + resultText;
+          score_c++;
+          document.getElementById("lose").play();
+        } else {
+          resultEl.style.backgroundColor = "#2ecc71";
+          resultEl.innerHTML = "You win!<br>" + resultText;
+          score_p++;
+          document.getElementById("win").play();
+        }
+
+        updateScore();
+        resultEl.classList.add("show");
+      }, 50);
+    }
+
+    function end() {
+      const resultEl = document.getElementById("result");
+      if (score_p > score_c) {
+        resultEl.innerHTML = `You are the Winner! 🎉`;
+        resultEl.style.backgroundColor = "#2ecc71";
+        confetti();
+      } else if (score_p < score_c) {
+        resultEl.innerHTML = `Computer is the Winner! 💻`;
+        resultEl.style.backgroundColor = "#e74c3c";
+      } else {
+        resultEl.innerHTML = `It's a Draw! 🤝`;
+        resultEl.style.backgroundColor = "#f1c40f";
+      }
+      document.querySelector(".play").style.display = "none";
+    }
+  </script>
+
+</body>
+</html>

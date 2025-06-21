@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Guess The Number</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+    }
+
+    .container {
+      text-align: center;
+      background-color: rgba(255, 255, 255, 0.05);
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 0 30px rgba(0, 255, 255, 0.3);
+      backdrop-filter: blur(8px);
+    }
+
+    h1 {
+      margin-bottom: 20px;
+      font-size: 2rem;
+      color: #00ffff;
+      text-shadow: 0 0 10px #00ffff;
+    }
+
+    input[type="number"] {
+      padding: 10px;
+      width: 200px;
+      border: none;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      text-align: center;
+      font-size: 1rem;
+      outline: none;
+      box-shadow: 0 0 10px #00ffff;
+    }
+
+    button {
+      padding: 10px 20px;
+      background-color: #00ffff;
+      color: #000;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      margin-left: 10px;
+    }
+
+    button:hover {
+      background-color: #0ff;
+      box-shadow: 0 0 15px #0ff;
+    }
+
+    #final {
+      margin-top: 20px;
+      font-size: 1.2rem;
+      color: #fff;
+      text-shadow: 0 0 5px #00ffff;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Guess the Number between 1–100</h1>
+    <input type="number" id="answer" placeholder="Enter your guess"/>
+    <button onclick="verify()">Submit</button>
+    <p id="final"></p>
+  </div>
+
+  <script>
+    let guess = Math.floor(Math.random() * 100) + 1;
+    let attempt = 0;
+
+    function verify() {
+      const input = document.getElementById("answer");
+      const feedback = document.getElementById("final");
+      const answer = Number(input.value);
+      attempt++;
+
+      if (answer < guess) {
+        feedback.textContent = "📈 The correct number is higher!";
+      } else if (answer > guess) {
+        feedback.textContent = "📉 The correct number is lower!";
+      } else if (answer === guess) {
+        feedback.textContent = `🎉 Correct! You guessed it in ${attempt} attempts.`;
+        input.disabled = true;
+      }
+
+      input.value = "";
+      input.focus();
+    }
+  </script>
+</body>
+</html>

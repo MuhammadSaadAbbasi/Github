@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Rock Paper Scissors</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Roboto', sans-serif;
+    }
+
+    body {
+      background-image: linear-gradient(to right top, #001330, #0f1234, #1e0f35, #2c0933, #39002f);
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 5rem;
+    }
+
+    h1 {
+      margin-bottom: 2rem;
+      font-size: 2rem;
+    }
+
+    .startScreen,
+    .play {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.103);
+      border-radius: 15px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    }
+
+    .startScreen {
+      flex-direction: row;
+    }
+
+    input {
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      font-size: 1rem;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      background: #00b4db;
+      color: white;
+      font-weight: bold;
+      transition: background 0.3s ease, transform 0.2s;
+    }
+
+    button:hover {
+      background: #0083b0;
+      transform: scale(1.05);
+    }
+
+    .play,
+    #result {
+      display: none;
+    }
+
+    .end {
+      background: linear-gradient(45deg, #ff0000, #b71c1c);
+      color: white;
+    }
+
+    .end:hover {
+      background: linear-gradient(#700b0b);
+    }
+
+    #result {
+      margin-top: 20px;
+      font-size: 1.2rem;
+      background-color: rgba(255, 255, 255, 0.1);
+      padding: 10px 15px;
+      width: clamp(20rem, 50%, 42vw);
+      border-radius: 10px;
+      text-align: center;
+    }
+
+    h2 {
+      font-size: 1.3rem;
+    }
+
+    .heading {
+      display: flex;
+      gap: 25%;
+      margin-bottom: 10%;
+    }
+
+    .playbutton button {
+      width: 100%;
+      margin: 1%;
+    }
+
+    .end {
+      display: none;
+    }
+
+    .reset {
+      background-color: rgb(69, 4, 107);
+    }
+
+    .reset:hover {
+      background-color: rgb(33, 3, 51);
+    }
+
+    .restart {
+      display: none;
+      background-color: rgb(5, 163, 5);
+      margin-top: 1.5rem;
+    }
+
+    .restart:hover {
+      background-color: rgb(4, 56, 4);
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Rock, Paper, Scissors Game</h1>
+
+  <div class="startScreen">
+    <input id="name" type="text" placeholder="Enter Player Name">
+    <button onclick="start()">Start Game</button>
+  </div>
+
+  <div class="play">
+    <div class="heading">
+      <h2 id="player">Player : 0</h2>
+      <h2 id="computer">Computer : 0</h2>
+    </div>
+
+    <div class="playbutton">
+      <button onclick="play('rock')">Rock</button>
+      <button onclick="play('paper')">Paper</button>
+      <button onclick="play('scissor')">Scissor</button>
+      <button onclick="reset()" class="reset">Reset Game</button>
+      <button onclick="end()" class="end">End Game</button>
+    </div>
+  </div>
+
+  <p id="result">Choose the above option</p>
+  <button onclick="restart()" class="restart">Play Again</button>
+
+  <script>
+    let score_p = 0;
+    let score_c = 0;
+    let name = "Player";
+  
+    // Store all repeated DOM references
+    const nameInput = document.getElementById("name");
+    const playerDisplay = document.getElementById("player");
+    const computerDisplay = document.getElementById("computer");
+    const resultBox = document.getElementById("result");
+    const playSection = document.querySelector(".play");
+    const startScreen = document.querySelector(".startScreen");
+    const endButton = document.querySelector(".end");
+    const restartBtn = document.querySelector(".restart");
+    const heading = document.querySelector("h1");
+  
+    function start() {
+      name = nameInput.value || "Player";
+      playerDisplay.innerHTML = `${name} : ${score_p}`;
+      playSection.style.display = "block";
+      resultBox.style.display = "block";
+      endButton.style.display = "block";
+      startScreen.style.display = "none";
+    }
+  
+    function updateScore() {
+      playerDisplay.innerHTML = `${name} : ${score_p}`;
+      computerDisplay.innerHTML = `Computer : ${score_c}`;
+    }
+  
+    function play(option) {
+      const opt = ['rock', 'paper', 'scissor'];
+      const computer = opt[Math.floor(Math.random() * 3)];
+  
+      if (computer === option) {
+        resultBox.innerHTML = "It is a tie";
+        resultBox.style.backgroundColor = 'rgb(161, 137, 0)';
+      } else if (
+        (computer === 'rock' && option === 'scissor') ||
+        (computer === 'scissor' && option === 'paper') ||
+        (computer === 'paper' && option === 'rock')
+      ) {
+        resultBox.innerHTML = `Computer : [ ${computer} ] vs You : [ ${option} ]`;
+        score_c++;
+        resultBox.style.backgroundColor = 'red';
+      } else {
+        resultBox.innerHTML = `Computer : [ ${computer} ] vs You : [ ${option} ]`;
+        score_p++;
+        resultBox.style.backgroundColor = 'green';
+      }
+  
+      updateScore();
+    }
+  
+    function end() {
+      if (score_p > score_c) {
+        resultBox.innerHTML = `You are the Winner`;
+        resultBox.style.backgroundColor = 'green';
+      } else if (score_p < score_c) {
+        resultBox.innerHTML = `Computer is the Winner`;
+         resultBox.style.backgroundColor = 'red';
+      } else {
+        resultBox.innerHTML = `It is a Tie`;
+        resultBox.style.backgroundColor = 'rgb(161, 137, 0)';
+      }
+  
+      playSection.style.display = "none";
+      restartBtn.style.display = "block";
+    }
+  
+    function reset() {
+      score_p = 0;
+      score_c = 0;
+      resultBox.innerHTML = "Choose the option above";
+      resultBox.style.backgroundColor = "rgba(255, 255, 255, 0.1)";
+      updateScore();
+    }
+  
+    function restart() {
+      heading.style.display = "block";
+      startScreen.style.display = "block";
+      restartBtn.style.display = "none";
+      resultBox.style.display = "none";
+      reset();
+    }
+  </script>
+  
+
+</body>
+</html>

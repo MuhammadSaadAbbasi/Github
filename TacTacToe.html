@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic Tac Toe</title>
+    <style>
+         * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Roboto', sans-serif;
+    }
+
+    body {
+     background-image: linear-gradient(to top, #000000, #130809, #1e100e, #26160f, #2e1c0f);
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 5rem;
+    }
+
+    .slate{
+        display: grid;
+        grid-template-columns: repeat(3,6rem);
+        gap: 0.5rem;
+        justify-content: center;
+    }
+    .slate div{
+        background-image: url(/pics/wooden.jpg);
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-position: center;
+        border-radius: 8px;
+        width: 6rem;
+        height: 6rem;
+        border: 2px solid #d6a561;
+        font-size: 2.5rem;
+        color: #fff;
+        text-align: center;
+        /* line-height: 6rem; */
+        cursor: pointer;
+        transition: transform 0.2s ease;
+        filter: grayscale(39%);
+    }
+    .slate div:hover{
+     transform: scale(1.05);
+    }
+
+    </style>
+</head>
+<body>
+    <h1>Tic Tac Toe</h1>
+
+  <!-- <div class="startScreen">
+    <input id="name" type="text" placeholder="Enter Player Name">
+    <button onclick="start()">Start Game</button>
+  </div>
+
+  <div class="select">
+    <button class="single">Single Player</button>
+    <button class="double">Two Player</button>
+  </div> -->
+
+  <p class="turn"></p> 
+  <div class="slate">
+    <div class="play" data-index="0"></div>
+    <div class="play" data-index="1"></div>
+    <div class="play" data-index="2"></div>
+    <div class="play" data-index="3"></div>
+    <div class="play" data-index="4"></div>
+    <div class="play" data-index="5"></div>
+    <div class="play" data-index="6"></div>
+    <div class="play" data-index="7"></div>
+    <div class="play" data-index="8"></div>
+  </div>
+
+<p class="result"></p>
+<div class="tease"></div>
+ <button>Play Again</button>   
+
+ <script>
+    const board = ["", "", "", "", "", "", "", "", ""];
+    const tiles = document.querySelectorAll(".play");
+    const resultText = document.querySelector(".result");
+    const turnText = document.querySelector(".turn");
+    const restartBtn = document.querySelector("button");
+  
+    let currentPlayer = "X";
+    let gameOver = false;
+  
+    turnText.textContent = `Turn: ${currentPlayer}`;
+  
+    tiles.forEach((tile, index) => {
+      tile.addEventListener("click", () => {
+        if (board[index] === "" && !gameOver && currentPlayer === "X") {
+          makeMove(index, "X", tile);
+  
+          if (checkWin("X")) {
+            resultText.textContent = "You win! 🎉";
+            gameOver = true;
+            return;
+          }
+  
+          if (isDraw()) {
+            resultText.textContent = "It's a draw!";
+            gameOver = true;
+            return;
+          }
+  
+          currentPlayer = "O";
+          turnText.textContent = `Turn: ${currentPlayer}`;
+  
+          // Delay AI move for realism
+          setTimeout(aiMove, 400);
+        }
+      });
+    });
+  
+    function aiMove() {
+      if (gameOver) return;
+  
+      const emptyIndices = board
+        .map((val, i) => (val === "" ? i : null))
+        .filter(i => i !== null);
+  
+      const aiIndex = emptyIndices[Math.floor(Math.random() * emptyIndices.length)];
+      const tile = tiles[aiIndex];
+  
+      makeMove(aiIndex, "O", tile);
+  
+      if (checkWin("O")) {
+        resultText.textContent = "AI wins! 🤖";
+        gameOver = true;
+        return;
+      }
+  
+      if (isDraw()) {
+        resultText.textContent = "It's a draw!";
+        gameOver = true;
+        return;
+      }
+  
+      currentPlayer = "X";
+      turnText.textContent = `Turn: ${currentPlayer}`;
+    }
+  
+    function makeMove(index, player, tile) {
+      board[index] = player;
+      tile.textContent = player;
+    }
+  
+    function checkWin(player) {
+      const winPatterns = [
+        [0, 1, 2], [3, 4, 5], [6, 7, 8],
+        [0, 3, 6], [1, 4, 7], [2, 5, 8],
+        [0, 4, 8], [2, 4, 6]
+      ];
+  
+      return winPatterns.some(pattern =>
+        pattern.every(i => board[i] === player)
+      );
+    }
+  
+    function isDraw() {
+      return board.every(cell => cell !== "");
+    }
+  
+    restartBtn.addEventListener("click", () => {
+      board.fill("");
+      tiles.forEach(tile => tile.textContent = "");
+      resultText.textContent = "";
+      currentPlayer = "X";
+      gameOver = false;
+      turnText.textContent = `Turn: ${currentPlayer}`;
+    });
+  </script>
+  
+</body>
+</html>

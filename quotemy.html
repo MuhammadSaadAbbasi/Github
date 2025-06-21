@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+    body {
+        background-image: linear-gradient(to right top, #000000, #050002, #080005, #09000b, #070010, #0b0119, #0a0322, #04062b, #000a3b, #000c4c, #000a5c, #00046b);        font-family: 'Segoe UI', sans-serif;
+    }
+    
+    .cover {
+        width: 100vw;
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .quotebox {
+        width: 40%;
+        padding: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-direction: column;
+        background: rgba(255, 255, 255, 0.05);
+        box-shadow: 0 0 25px rgba(255, 255, 255, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 15px;
+        backdrop-filter: blur(10px);
+        transition: 0.5s ease;
+    }
+    
+    .quote {
+        color: white;
+        font-size: 1.4rem;
+        text-align: center;
+        min-height: 4rem;
+        opacity: 0;
+        animation: fadeIn 0.8s ease-in forwards;
+    }
+    
+    @keyframes fadeIn {
+        to {
+            opacity: 1;
+        }
+    }
+    
+    .button {
+        margin-top: 30px;
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        gap: 1rem;
+    }
+    
+    .button button {
+        flex: 1;
+        padding: 10px 15px;
+        background-color: rgba(255, 255, 255, 0.8);
+        color: black;
+        border: none;
+        border-radius: 8px;
+        font-weight: bold;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: 0.3s ease;
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+    }
+    
+    .button button:hover {
+        background-color: gold;
+        color: black;
+        transform: scale(1.05);
+    }
+    
+    </style>
+</head>
+
+<body>
+   <div class="cover">
+    <div class="quotebox">
+        <div class="text">
+        <p class="quote" id="quote">hey bro</p>
+    </div> 
+    <div class="button">    
+    <button onclick="prev()">Previous</button>
+    <button onclick="next()">Next</button>
+</div>
+    </div>
+</div>
+
+    
+</body>
+<script>
+    let index = -1 ;
+    const quotes =[
+        "Victory is changing the heart of your opponent.",
+        "A warrior never gives up.",
+         "To destroy a nation, spread adultery.",
+        "Stand firm. Even when alone.",
+        "Justice is power under control."
+
+    ]
+    function showQuote(){
+        // const quoteElem = document.getElementById("quote");
+    // quoteElem.classList.remove("quote"); // restart animation
+    // void quoteElem.offsetWidth; // trigger reflow
+    // quoteElem.classList.add("quote"); // re-add class
+    // quoteElem.innerText = quotes[index];
+        document.getElementById("quote").innerText=quotes[index];
+    }
+    function prev(){    
+        if(index==0){
+            index=quotes.length;
+    }
+    index--;
+    showQuote();
+    }
+    function next(){
+        
+        index++;   
+        if(index==(quotes.length)){
+        index=0;
+    }
+    
+    showQuote();
+    }
+
+
+</script>
+</html>
