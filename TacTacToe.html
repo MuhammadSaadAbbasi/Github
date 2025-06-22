@@ -83,100 +83,47 @@
  <button>Play Again</button>   
 
  <script>
-    const board = ["", "", "", "", "", "", "", "", ""];
-    const tiles = document.querySelectorAll(".play");
-    const resultText = document.querySelector(".result");
-    const turnText = document.querySelector(".turn");
-    const restartBtn = document.querySelector("button");
-  
-    let currentPlayer = "X";
-    let gameOver = false;
-  
-    turnText.textContent = `Turn: ${currentPlayer}`;
-  
-    tiles.forEach((tile, index) => {
-      tile.addEventListener("click", () => {
-        if (board[index] === "" && !gameOver && currentPlayer === "X") {
-          makeMove(index, "X", tile);
-  
-          if (checkWin("X")) {
-            resultText.textContent = "You win! 🎉";
-            gameOver = true;
-            return;
-          }
-  
-          if (isDraw()) {
-            resultText.textContent = "It's a draw!";
-            gameOver = true;
-            return;
-          }
-  
-          currentPlayer = "O";
-          turnText.textContent = `Turn: ${currentPlayer}`;
-  
-          // Delay AI move for realism
-          setTimeout(aiMove, 400);
-        }
-      });
-    });
-  
-    function aiMove() {
-      if (gameOver) return;
-  
-      const emptyIndices = board
-        .map((val, i) => (val === "" ? i : null))
-        .filter(i => i !== null);
-  
-      const aiIndex = emptyIndices[Math.floor(Math.random() * emptyIndices.length)];
-      const tile = tiles[aiIndex];
-  
-      makeMove(aiIndex, "O", tile);
-  
-      if (checkWin("O")) {
-        resultText.textContent = "AI wins! 🤖";
-        gameOver = true;
-        return;
+    const board =["","","","","","","","",""]
+    const tiles = document.querySelectorAll(".play")
+    let currentPlayer = "X"
+
+    for(let i = 0; i < tiles.length;i++){
+       tiles[i].addEventListener("click",()=>{
+        if(board[i]==""){
+        move(tiles[i] ,i, currentPlayer);
+        currentPlayer = "O";
+        aiMove(board ,currentPlayer);
+        currentPlayer = "X";
       }
+
+       })
+    }
+
+
+    let move = function(tile,index, currentPlayer){
+      tile.textContent = currentPlayer;
+      board[index] = currentPlayer;
+      document.querySelector(".turn").textContent = `${currentPlayer} turn`;
+
+    }
+    let aiMove = function(board, currentPlayer){
   
-      if (isDraw()) {
-        resultText.textContent = "It's a draw!";
-        gameOver = true;
-        return;
+      let emptyBoard=[];
+      for(let i = 0 ; i < board.length ; i++){
+        if(board[i] == ""){
+        emptyBoard.push(i);
       }
-  
-      currentPlayer = "X";
-      turnText.textContent = `Turn: ${currentPlayer}`;
+      }
+
+      let aiChoose = emptyBoard[Math.floor(Math.random() * emptyBoard.length)];
+      move(tiles[aiChoose], aiChoose, currentPlayer);
+
+      
+
+   
     }
-  
-    function makeMove(index, player, tile) {
-      board[index] = player;
-      tile.textContent = player;
-    }
-  
-    function checkWin(player) {
-      const winPatterns = [
-        [0, 1, 2], [3, 4, 5], [6, 7, 8],
-        [0, 3, 6], [1, 4, 7], [2, 5, 8],
-        [0, 4, 8], [2, 4, 6]
-      ];
-  
-      return winPatterns.some(pattern =>
-        pattern.every(i => board[i] === player)
-      );
-    }
-  
-    function isDraw() {
-      return board.every(cell => cell !== "");
-    }
-  
-    restartBtn.addEventListener("click", () => {
-      board.fill("");
-      tiles.forEach(tile => tile.textContent = "");
-      resultText.textContent = "";
-      currentPlayer = "X";
-      gameOver = false;
-      turnText.textContent = `Turn: ${currentPlayer}`;
-    });
+
+    
   </script>
   
 </body>
