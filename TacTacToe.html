@@ -167,7 +167,7 @@
 </div>
 
   <div class="game">
-  <p class="turn"></p> 
+  <p class="turn">Play your Move</p> 
   <div class="slate">
     <div class="play" data-index="0"></div>
     <div class="play" data-index="1"></div>
@@ -182,130 +182,208 @@
 
 <p class="result"></p>
 <div class="tease"></div>
- <button>Play Again</button>   
+ <button onclick="playAgain()">Play Again</button>
+ <button onclick="mainMenu()">Main Menu</button>   
 </div>
- <script>
-    const board =["","","","","","","","",""]
-    const tiles = document.querySelectorAll(".play")
-    let currentPlayer = "X"
-    let gameOver =false;
-    let isMultiplayer =false;
-    let playerName;
-    let mPlayerName;
+<script>
+  let board = ["", "", "", "", "", "", "", "", ""];
+  const tiles = document.querySelectorAll(".play");
 
-    function assignName(){
-      if(isMultiplayer){
-        playerName = document.getElementById("name1").value;
-        mPlayerName = document.getElementById("name2").value;
-      }
-      else{
-        playerName = document.getElementById("name").value;
-        
-      }
-     }
-       
-     function startGameMode(e) {
-      if (e.currentTarget.classList.contains("double")) {//explain this
-        
-        isMultiplayer = true;
-        document.querySelector(".mStartScreen").style.display = "flex";
-      } else {
-        isMultiplayer = false;
-        document.querySelector(".startScreen").style.display = "block";
-      }
+  // 🎯 DOM Element Shortcuts
+  const turnText = document.querySelector(".turn");
+  const resultText = document.querySelector(".result");
+  const selectScreen = document.querySelector(".select");
+  const gameScreen = document.querySelector(".game");
+  const startScreenSingle = document.querySelector(".startScreen");
+  const startScreenMulti = document.querySelector(".mStartScreen");
+  const inputSection = document.querySelector(".input");
+  const teaseBox = document.querySelector(".tease");
+  const nameInput = document.getElementById("name");
+  const name1Input = document.getElementById("name1");
+  const name2Input = document.getElementById("name2");
 
-      document.querySelector(".select").style.display = "none";
-      // Hide select screen and show game screen
-      
-      
+  let currentPlayer = "X";
+  let gameOver = false;
+  let isMultiplayer = false;
+  let playerName;
+  let mPlayerName;
 
-      // You can also reset board here if needed
+  function assignName() {
+    if (isMultiplayer) {
+      playerName = name1Input.value;
+      mPlayerName = name2Input.value;
+    } else {
+      playerName = nameInput.value;
+    }
+  }
+
+  function startGameMode(e) {
+    if (e.currentTarget.classList.contains("double")) {
+      // If double mode button is clicked
+      isMultiplayer = true;
+      startScreenMulti.style.display = "flex";
+    } else {
+      isMultiplayer = false;
+      startScreenSingle.style.display = "block";
     }
 
-    document.querySelector(".single").addEventListener("click", startGameMode);
-    document.querySelector(".double").addEventListener("click", startGameMode);
+    selectScreen.style.display = "none";
+    // Hide select screen and show game screen
+  }
 
-    
-    let start = function(){
-      assignName();
-      document.querySelector(".input").style.display = "none";
-      document.querySelector(".game").style.display = "block";
+  document.querySelector(".single").addEventListener("click", startGameMode);
+  document.querySelector(".double").addEventListener("click", startGameMode);
 
+  let start = function () {
+    assignName();
+    inputSection.style.display = "none";
+    gameScreen.style.display = "block";
+    turnText.textContent = `${playerName}'s Turn`; // show the first turn
+  };
 
-    }
-    
+  function mainMenu() {
+    gameScreen.style.display = "none";
+    selectScreen.style.display = "flex";
+    board = ["", "", "", "", "", "", "", "", ""];
 
-    for(let i = 0; i < tiles.length;i++){
-      document.querySelector(".turn").textContent = `${playerName}'s Turn`;
+    turnText.textContent = "Play Your Move";
+    resultText.textContent = "";
+    teaseBox.textContent = "";
 
-       tiles[i].addEventListener("click",()=>{
-        if(board[i]==""&& (gameOver==false)){
+    tiles.forEach(tile => {
+      tile.textContent = "";
+    });
 
-        move(tiles[i] ,i, currentPlayer);
-        currentPlayer = currentPlayer =="X"?"O":"X";
+    gameOver = false;
+    currentPlayer = "X";
+  }
 
-        if(isDraw()){
-          document.querySelector(".result").textContent="Its a Draw"
-          gameOver=true;
+  function playAgain() {
+    board = ["", "", "", "", "", "", "", "", ""];
+    turnText.textContent = "Play Your Move";
+    resultText.textContent = "";
+    teaseBox.textContent = "";
+
+    tiles.forEach(tile => {
+      tile.textContent = "";
+    });
+
+    gameOver = false;
+    currentPlayer = "X";
+  }
+
+  for (let i = 0; i < tiles.length; i++) {
+    tiles[i].addEventListener("click", () => {
+      if (board[i] == "" && gameOver == false) {
+        turnText.textContent = `${playerName}'s Turn`; // update before move
+
+        move(tiles[i], i, currentPlayer);
+        currentPlayer = currentPlayer == "X" ? "O" : "X";
+
+        if (isDraw()) {
+          resultText.textContent = "It's a Draw";
+          gameOver = true;
         }
-        if(!isMultiplayer){
-        aiMove(board ,currentPlayer);
-        currentPlayer = currentPlayer =="X"?"O":"X";
-        if(isDraw()){
-          document.querySelector(".result").textContent="Its a Draw"
-          gameOver=true;
 
-        } 
+        if (!isMultiplayer) {
+          aiMove(board, currentPlayer);
+          currentPlayer = currentPlayer == "O" ? "X" : "O";
+
+          if (isDraw()) {
+            resultText.textContent = "It's a Draw";
+            gameOver = true;
+          }
         }
-        
+      }
+    });
+  }
+
+  let move = function (tile, index, currentPlayer) {
+    tile.textContent = currentPlayer;
+    board[index] = currentPlayer;
+
+    if (isMultiplayer) {
+      (currentPlayer == "X")
+        ? turnText.textContent = `${playerName}'s Turn`
+        : turnText.textContent = `${mPlayerName}'s Turn`;
+
+      if (checkWin(board, currentPlayer)) {
+        (currentPlayer == "X")
+          ? resultText.textContent = `${playerName} Won`
+          : resultText.textContent = `${mPlayerName} Won`;
+
+        gameOver = true;
+      }
+    } else {
+      // Single Player Mode
+      (currentPlayer == "X")
+        ? turnText.textContent = `${playerName}'s Turn`
+        : turnText.textContent = `Computer's turn`;
+
+      if (checkWin(board, currentPlayer)) {
+        (currentPlayer == "X")
+          ? resultText.textContent = `You Won`
+          : resultText.textContent = `Computer Won`;
+
+        gameOver = true;
+      }
+    }
+  };
+
+  let aiMove = function (board, currentPlayer) {
+    turnText.textContent = `Computer's Turn`; // show this before move
+          // turnText.textContent = `Computer's Turn`;
+
+      let aiChoose = aiIntelligence(board, "O", "X");
+
+      if (aiChoose === null) {
+        let emptyBoard = [];
+        for (let i = 0; i < board.length; i++) {
+          if (board[i] === "") {
+            emptyBoard.push(i);
+          }
+        }
+        aiChoose = emptyBoard[Math.floor(Math.random() * emptyBoard.length)];
       }
 
-       })}
-
-       
-  
-    let move = function(tile,index, currentPlayer){
-      tile.textContent = currentPlayer;
-      board[index] = currentPlayer;
-      if(isMultiplayer){
-      (currentPlayer=="X")?document.querySelector(".turn").textContent=`${playerName}'s Turn`:document.querySelector(".turn").textContent=`${mPlayerName}'s turn`;
-      if(checkWin(board,currentPlayer)){
-        (currentPlayer=="X")?document.querySelector(".result").textContent=`${playerName} Won`:document.querySelector(".result").textContent=`${mPlayerName} Won`;
-          
-          gameOver = true;  
-        }
-
-    }
-    else{ (currentPlayer=="X")?document.querySelector(".turn").textContent=`${playerName}'s Turn`:document.querySelector(".turn").textContent=`Computer's turn`;
-      if(checkWin(board,currentPlayer)){
-        (currentPlayer=="X")?document.querySelector(".result").textContent=`You Won`:document.querySelector(".result").textContent=`Computer Won`;
-          
-          gameOver = true;  
-        }
-
-    }
-      
-    }
-    let aiMove = function(board, currentPlayer){
-  
-      let emptyBoard=[];
-      for(let i = 0 ; i < board.length ; i++){
-        if(board[i] == ""){
-        emptyBoard.push(i);
-        // store empty indices
-      }
-      }
-
-      let aiChoose = emptyBoard[Math.floor(Math.random() * emptyBoard.length)];
-      move(tiles[aiChoose], aiChoose, currentPlayer);
-        //see bro the thing is that u have empty indices stored in emptyboard
-        //it will give u an index in limit of emptyboard length . It not means that number is ur index of real one board
-        //suppose emptyBoard =[3,2,5,7,8]
-        //emptyBoard[Math.floor(0.72*5)] => emptyBoard[3] => 5
+      move(tiles[aiChoose], aiChoose, currentPlayer);     
    
+    // see bro the thing is that u have empty indices stored in emptyboard
+    // it will give u an index in limit of emptyboard length . It not means that number is ur index of real one board
+    // suppose emptyBoard =[3,2,5,7,8]
+    // emptyBoard[Math.floor(0.72*5)] => emptyBoard[3] => 5
+  }
+
+  let checkWin = function (board, player) {
+    const winCombos = [
+      [0, 1, 2],
+      [3, 4, 5],
+      [6, 7, 8],
+      [0, 3, 6],
+      [1, 4, 7],
+      [2, 5, 8],
+      [0, 4, 8],
+      [2, 4, 6]
+    ];
+
+    for (let i = 0; i < winCombos.length; i++) {
+      combos = winCombos[i];
+      let index1 = combos[0];
+      let index2 = combos[1];
+      let index3 = combos[2];
+
+      if (board[index1] == player && board[index2] == player && board[index3] == player) {
+        return true;
+      }
     }
-    let checkWin = function(board,player){
-      const winCombos = [
+    return false;
+  };
+
+  function isDraw() {
+    return board.every(cell => cell !== ""); // means all cells are filled
+  }
+  function aiIntelligence(board, aiPlayer = "O", humanPlayer = "X") {
+  const winCombos = [
     [0, 1, 2],
     [3, 4, 5],
     [6, 7, 8],
@@ -314,28 +392,29 @@
     [2, 5, 8],
     [0, 4, 8],
     [2, 4, 6]
-];        
-  for(let i = 0 ; i < winCombos.length ; i++){
-    combos = winCombos[i];
-    let index1 = combos[0];
-    let index2= combos[1];
-    let index3 = combos[2];
-    if(board[index1]==player&&board[index2]==player&&board[index3]==player){
-      return true;
-    }
-  
-    
-  }   
-  return false; 
-} 
-function isDraw() {
-  
-  return board.every(cell => cell !== ""); // means all cells are filled
+  ];
 
+  // 1️⃣ Try to win (find 2 AI cells + 1 empty)
+  for (let combo of winCombos) {
+    const [a, b, c] = combo;
+    if (board[a] === aiPlayer && board[b] === aiPlayer && board[c] === "") return c;
+    if (board[a] === aiPlayer && board[c] === aiPlayer && board[b] === "") return b;
+    if (board[b] === aiPlayer && board[c] === aiPlayer && board[a] === "") return a;
+  }
+
+  // 2️⃣ Block human win (find 2 human cells + 1 empty)
+  for (let combo of winCombos) {
+    const [a, b, c] = combo;
+    if (board[a] === humanPlayer && board[b] === humanPlayer && board[c] === "") return c;
+    if (board[a] === humanPlayer && board[c] === humanPlayer && board[b] === "") return b;
+    if (board[b] === humanPlayer && board[c] === humanPlayer && board[a] === "") return a;
+  }
+
+  // 3️⃣ No win/block found
+  return null;
 }
 
-    
-  </script>
-  
+</script>
+
 </body>
 </html>
