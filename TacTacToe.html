@@ -19,9 +19,101 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
+      /* justify-content: center; */
       padding: 5rem;
     }
+    h1{
+      border: red 2px solid;
+    }
+    .startScreen{
+      margin-top: 5rem;
+      /* border: red 2px solid; */
+    }
+    
+    input {
+      height: 2.7rem;
+      width: 15rem;
+      border-radius: 12px;
+      border-color: transparent;
+      margin: 0 0.6rem;
+      padding: 0.7rem 1rem;
+      border-radius: 1rem;
+      background-color: #2e1c0f;
+      color: #ffdead;
+      border: none;
+      width: 300px;
+      font-size: 1rem;
+      transition: box-shadow 0.3s ease;
+    }
+    input:focus {
+    outline: none;
+    box-shadow: 0 0 10px #ff800080;
+    }
+     button{
+      height: 2.7rem;
+      width: 10rem;
+      border-radius: 14px;
+      font-weight: bold;
+      background-color: 	rgb(183, 91, 20);
+      border-color: transparent;
+      cursor: pointer;
+      transition: transform 1s ease;
+      color: #ffdead;
+      font-size: 110%;
+      
+      
+    }
+    button:hover{
+    
+      transform: scale(1.07);
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.387);
+
+    }
+    .game,.startScreen,.mStartScreen{ 
+      display: none;
+      margin-top: 4rem;
+    }
+    .mStartScreen{
+     flex-direction: column;
+     gap: 1rem;
+    }
+    .mStartScreen button{
+      margin-left: auto;
+      margin-right: 2%;
+    }
+    
+    
+    .select{
+     border: 1px red solid;
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     gap: 2rem;
+     width: 100%;
+     height: 70vh;
+    }
+
+    
+   .single,.double{
+   
+    width: 14rem;
+    height: 12rem;
+    background-position: center;
+    background-size: cover;
+    background-color: #6b4713;
+    transition: background-color 0.9s ease;
+    transition: transform 1s ease; 
+  }
+   .single:hover,.double:hover{
+    background-color: #362105;
+
+  }
+   .single{
+    background-image: url(/pics/s.png);}
+    .double{
+      background-image: url(/pics/d.png);
+    }
+  
 
     .slate{
         display: grid;
@@ -55,16 +147,26 @@
 <body>
     <h1>Tic Tac Toe</h1>
 
-  <!-- <div class="startScreen">
+  
+  <div class="select">
+    <button class="single" ></button>
+    <button class="double" ></button>
+  </div>
+
+  <div class="input">
+  <div class="startScreen">
     <input id="name" type="text" placeholder="Enter Player Name">
     <button onclick="start()">Start Game</button>
   </div>
 
-  <div class="select">
-    <button class="single">Single Player</button>
-    <button class="double">Two Player</button>
-  </div> -->
+  <div class="mStartScreen">
+    <input id="name1" type="text" placeholder="Enter First Player ">
+    <input id="name2" type="text" placeholder="Enter Second Player ">
+    <button onclick="start()">Start Game</button>
+  </div>
+</div>
 
+  <div class="game">
   <p class="turn"></p> 
   <div class="slate">
     <div class="play" data-index="0"></div>
@@ -81,30 +183,108 @@
 <p class="result"></p>
 <div class="tease"></div>
  <button>Play Again</button>   
-
+</div>
  <script>
     const board =["","","","","","","","",""]
     const tiles = document.querySelectorAll(".play")
     let currentPlayer = "X"
+    let gameOver =false;
+    let isMultiplayer =false;
+    let playerName;
+    let mPlayerName;
 
-    for(let i = 0; i < tiles.length;i++){
-       tiles[i].addEventListener("click",()=>{
-        if(board[i]==""){
-        move(tiles[i] ,i, currentPlayer);
-        currentPlayer = "O";
-        aiMove(board ,currentPlayer);
-        currentPlayer = "X";
+    function assignName(){
+      if(isMultiplayer){
+        playerName = document.getElementById("name1").value;
+        mPlayerName = document.getElementById("name2").value;
+      }
+      else{
+        playerName = document.getElementById("name").value;
+        
+      }
+     }
+       
+     function startGameMode(e) {
+      if (e.currentTarget.classList.contains("double")) {//explain this
+        
+        isMultiplayer = true;
+        document.querySelector(".mStartScreen").style.display = "flex";
+      } else {
+        isMultiplayer = false;
+        document.querySelector(".startScreen").style.display = "block";
       }
 
-       })
+      document.querySelector(".select").style.display = "none";
+      // Hide select screen and show game screen
+      
+      
+
+      // You can also reset board here if needed
     }
 
+    document.querySelector(".single").addEventListener("click", startGameMode);
+    document.querySelector(".double").addEventListener("click", startGameMode);
 
+    
+    let start = function(){
+      assignName();
+      document.querySelector(".input").style.display = "none";
+      document.querySelector(".game").style.display = "block";
+
+
+    }
+    
+
+    for(let i = 0; i < tiles.length;i++){
+      document.querySelector(".turn").textContent = `${playerName}'s Turn`;
+
+       tiles[i].addEventListener("click",()=>{
+        if(board[i]==""&& (gameOver==false)){
+
+        move(tiles[i] ,i, currentPlayer);
+        currentPlayer = currentPlayer =="X"?"O":"X";
+
+        if(isDraw()){
+          document.querySelector(".result").textContent="Its a Draw"
+          gameOver=true;
+        }
+        if(!isMultiplayer){
+        aiMove(board ,currentPlayer);
+        currentPlayer = currentPlayer =="X"?"O":"X";
+        if(isDraw()){
+          document.querySelector(".result").textContent="Its a Draw"
+          gameOver=true;
+
+        } 
+        }
+        
+      }
+
+       })}
+
+       
+  
     let move = function(tile,index, currentPlayer){
       tile.textContent = currentPlayer;
       board[index] = currentPlayer;
-      document.querySelector(".turn").textContent = `${currentPlayer} turn`;
+      if(isMultiplayer){
+      (currentPlayer=="X")?document.querySelector(".turn").textContent=`${playerName}'s Turn`:document.querySelector(".turn").textContent=`${mPlayerName}'s turn`;
+      if(checkWin(board,currentPlayer)){
+        (currentPlayer=="X")?document.querySelector(".result").textContent=`${playerName} Won`:document.querySelector(".result").textContent=`${mPlayerName} Won`;
+          
+          gameOver = true;  
+        }
 
+    }
+    else{ (currentPlayer=="X")?document.querySelector(".turn").textContent=`${playerName}'s Turn`:document.querySelector(".turn").textContent=`Computer's turn`;
+      if(checkWin(board,currentPlayer)){
+        (currentPlayer=="X")?document.querySelector(".result").textContent=`You Won`:document.querySelector(".result").textContent=`Computer Won`;
+          
+          gameOver = true;  
+        }
+
+    }
+      
     }
     let aiMove = function(board, currentPlayer){
   
@@ -112,16 +292,47 @@
       for(let i = 0 ; i < board.length ; i++){
         if(board[i] == ""){
         emptyBoard.push(i);
+        // store empty indices
       }
       }
 
       let aiChoose = emptyBoard[Math.floor(Math.random() * emptyBoard.length)];
       move(tiles[aiChoose], aiChoose, currentPlayer);
-
-      
-
+        //see bro the thing is that u have empty indices stored in emptyboard
+        //it will give u an index in limit of emptyboard length . It not means that number is ur index of real one board
+        //suppose emptyBoard =[3,2,5,7,8]
+        //emptyBoard[Math.floor(0.72*5)] => emptyBoard[3] => 5
    
     }
+    let checkWin = function(board,player){
+      const winCombos = [
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [0, 4, 8],
+    [2, 4, 6]
+];        
+  for(let i = 0 ; i < winCombos.length ; i++){
+    combos = winCombos[i];
+    let index1 = combos[0];
+    let index2= combos[1];
+    let index3 = combos[2];
+    if(board[index1]==player&&board[index2]==player&&board[index3]==player){
+      return true;
+    }
+  
+    
+  }   
+  return false; 
+} 
+function isDraw() {
+  
+  return board.every(cell => cell !== ""); // means all cells are filled
+
+}
 
     
   </script>
