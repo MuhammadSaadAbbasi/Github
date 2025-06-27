@@ -1,259 +1,721 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Tic Tac Toe</title>
-  <style>
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic Tac Toe</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', sans-serif;
+        }
 
-body {
-  background: linear-gradient(to top, #0d0d0d, #1e120a, #3a1f10);
-  color: #fceab7;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 3rem;
-  position: relative;
-}
+        body {
+            background-image: linear-gradient(to top, #000000, #130809, #1e100e, #26160f, #2e1c0f);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+            position: relative;
+            overflow-x: hidden;
+        }
 
-h1 {
-  font-size: 3rem;
-  color: #e7b562;
-  text-shadow: 0 0 10px #e7b56288;
-  margin-bottom: 2rem;
-}
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, transparent 0%, rgba(0, 0, 0, 0.7) 100%);
+            z-index: -1;
+        }
 
-.slate {
-  display: grid;
-  grid-template-columns: repeat(3, 6rem);
-  gap: 0.6rem;
-  justify-content: center;
-  position: relative;
-  z-index: 1;
-}
+        h1 {
+            color: #d6a561;
+            font-size: 2.5rem;
+            text-shadow: 0 0 10px rgba(214, 165, 97, 0.5);
+            margin-bottom: 1rem;
+            position: relative;
+            text-align: center;
+            padding: 0.5rem 2rem;
+            background: rgba(46, 28, 15, 0.7);
+            border-radius: 15px;
+            border: 2px solid #d6a561;
+        }
 
-.slate div {
-  background-image: url('/pics/wooden.jpg'); /* update to your path */
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center;
-  width: 6rem;
-  height: 6rem;
-  border-radius: 12px;
-  border: 2px solid #c99e5c;
-  font-size: 2.5rem;
-  color: #ffe;
-  text-align: center;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  filter: grayscale(30%) brightness(0.95);
-  cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
+        h1::after {
+            content: "";
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            height: 3px;
+            background: linear-gradient(to right, transparent, #d6a561, transparent);
+        }
 
-.slate div:hover {
-  transform: scale(1.07);
-  box-shadow: 0 0 10px #e7b56288;
-}
+        .startScreen, .mStartScreen {
+            margin-top: 2rem;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+            background: rgba(46, 28, 15, 0.8);
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 0 20px rgba(214, 165, 97, 0.3);
+            border: 2px solid #d6a561;
+            max-width: 500px;
+            width: 100%;
+        }
 
-.line {
-  position: absolute;
-  width: 18rem;
-  height: 5px;
-  background-color: #ffcc70;
-  border-radius: 5px;
-  box-shadow: 0 0 25px #ffcc7088;
-  transition: 0.4s ease;
-  transform-origin: left center;
-  transform: scaleX(0);
-  z-index: 10;
-}
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            gap: 0.5rem;
+        }
 
-.turn, .result {
-  margin: 1rem 0 0.5rem;
-  font-size: 1.2rem;
-  color: #fffad4;
-  text-shadow: 0 0 5px #c99e5c99;
-}
+        label {
+            color: #ffdead;
+            font-size: 1rem;
+            margin-left: 0.5rem;
+        }
 
-button {
-  margin-top: 1.5rem;
-  padding: 0.6rem 1.5rem;
-  font-size: 1rem;
-  cursor: pointer;
-  border-radius: 5px;
-  border: none;
-  background-color: #e7b562;
-  color: #231100;
-  font-weight: bold;
-  box-shadow: 0 0 10px #e7b56255;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-}
+        input {
+            height: 2.7rem;
+            border-radius: 12px;
+            border-color: transparent;
+            padding: 0.7rem 1rem;
+            border-radius: 1rem;
+            background-color: #2e1c0f;
+            color: #ffdead;
+            border: none;
+            width: 100%;
+            font-size: 1rem;
+            transition: box-shadow 0.3s ease;
+        }
 
-button:hover {
-  background-color: #ebb043;
-  transform: scale(1.05);
-}
-  </style>
+        input:focus {
+            outline: none;
+            box-shadow: 0 0 10px #ff800080;
+        }
+
+        button {
+            height: 2.7rem;
+            border-radius: 14px;
+            font-weight: bold;
+            background-color: rgb(183, 91, 20);
+            border-color: transparent;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #ffdead;
+            font-size: 1.1rem;
+            width: 100%;
+            max-width: 300px;
+            margin-top: 0.5rem;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        button::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: 0.5s;
+            z-index:-1;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(255, 128, 0, 0.6);
+        }
+
+        button:hover::before {
+            left: 100%;
+        }
+
+        .game {
+            display: none;
+            margin-top: 2rem;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .select {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+            width: 100%;
+            max-width: 800px;
+            margin-top: 2rem;
+            padding: 2rem;
+            background: rgba(46, 28, 15, 0.7);
+            border-radius: 20px;
+            border: 2px solid #d6a561;
+            box-shadow: 0 0 20px rgba(214, 165, 97, 0.3);
+        }
+
+        .mode-container {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            width: 100%;
+            flex-wrap: wrap;
+        }
+
+        .mode-btn {
+            width: 14rem;
+            height: 12rem;
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: rgba(107, 71, 19, 0.8);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            padding: 1rem;
+            border: 2px solid #d6a561;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .mode-btn::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(54, 33, 5, 0.4);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .mode-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .mode-btn:hover::before {
+            opacity: 1;
+        }
+
+        .mode-btn i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            color: #ffdead;
+        }
+
+        .mode-btn h3 {
+            color: #ffdead;
+            font-size: 1.5rem;
+            text-align: center;
+            text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+        }
+
+        .turn {
+            font-size: 1.5rem;
+            color: #ffdead;
+            text-align: center;
+            padding: 0.5rem 1.5rem;
+            background: rgba(46, 28, 15, 0.7);
+            border-radius: 10px;
+            border: 2px solid #d6a561;
+            width: 100%;
+        }
+
+        .slate {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.8rem;
+            width: 100%;
+            max-width: 400px;
+            aspect-ratio: 1/1;
+            background: rgba(46, 28, 15, 0.7);
+            padding: 1rem;
+            border-radius: 15px;
+            border: 2px solid #d6a561;
+            box-shadow: 0 0 15px rgba(214, 165, 97, 0.3);
+        }
+
+        .play {
+            background: rgba(107, 71, 19, 0.8);
+            border-radius: 10px;
+            border: 2px solid #d6a561;
+            font-size: 3rem;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            aspect-ratio: 1/1;
+        }
+
+        .play:hover {
+            transform: scale(1.03);
+            background: rgba(139, 92, 25, 0.9);
+        }
+
+        .result {
+            font-size: 1.8rem;
+            color: #ffdead;
+            text-align: center;
+            min-height: 2.5rem;
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(255, 222, 173, 0.5);
+            padding: 0.5rem 1.5rem;
+            background: rgba(46, 28, 15, 0.7);
+            border-radius: 10px;
+            border: 2px solid #d6a561;
+            width: 100%;
+        }
+
+        .game-buttons {
+            display: flex;
+            gap: 1rem;
+            width: 100%;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .tease {
+            font-size: 1.2rem;
+            color: #ff8000;
+            text-align: center;
+            min-height: 1.5rem;
+            font-style: italic;
+        }
+
+        .footer {
+            margin-top: auto;
+            padding: 1.5rem 0;
+            text-align: center;
+            color: #d6a561;
+            font-size: 0.9rem;
+            width: 100%;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 1rem;
+            }
+            
+            .select {
+                padding: 1.5rem;
+            }
+            
+            .mode-container {
+                flex-direction: column;
+                align-items: center;
+                gap: 1.5rem;
+            }
+            
+            .mode-btn {
+                width: 100%;
+                max-width: 300px;
+                height: 10rem;
+            }
+            
+            .game-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .game-buttons button {
+                max-width: 250px;
+            }
+        }
+
+        .x-move {
+            color: #ff6b6b;
+            text-shadow: 0 0 8px rgba(255, 107, 107, 0.6);
+        }
+
+        .o-move {
+            color: #48dbfb;
+            text-shadow: 0 0 8px rgba(72, 219, 251, 0.6);
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-  <h1>Tic Tac Toe</h1>
+    <h1>Tic Tac Toe</h1>
 
-  <p class="turn">Turn: X</p>
+    <div class="select">
+        <h2>Select Game Mode</h2>
+        <div class="mode-container">
+            <div class="mode-btn single">
+                <i class="fas fa-user"></i>
+                <h3>Single Player</h3>
+                <p>Play against AI</p>
+            </div>
+            <div class="mode-btn double">
+                <i class="fas fa-users"></i>
+                <h3>Multiplayer</h3>
+                <p>Play with a friend</p>
+            </div>
+        </div>
+    </div>
 
-  <div class="slate">
-    <div class="play" data-index="0"></div>
-    <div class="play" data-index="1"></div>
-    <div class="play" data-index="2"></div>
-    <div class="play" data-index="3"></div>
-    <div class="play" data-index="4"></div>
-    <div class="play" data-index="5"></div>
-    <div class="play" data-index="6"></div>
-    <div class="play" data-index="7"></div>
-    <div class="play" data-index="8"></div>
-  </div>
+    <div class="input">
+        <div class="startScreen">
+            <div class="input-group">
+                <label for="name">Enter Your Name</label>
+                <input id="name" type="text" placeholder="Player Name">
+            </div>
+            <button onclick="startGame()">Start Game</button>
+            <button onclick="showSelectScreen()">Back</button>
+        </div>
 
-  <div class="line"></div>
+        <div class="mStartScreen">
+            <div class="input-group">
+                <label for="name1">Player 1 (X)</label>
+                <input id="name1" type="text" placeholder="Player 1 Name">
+            </div>
+            <div class="input-group">
+                <label for="name2">Player 2 (O)</label>
+                <input id="name2" type="text" placeholder="Player 2 Name">
+            </div>
+            <button onclick="startGame()">Start Game</button>
+            <button onclick="showSelectScreen()">Back</button>
+        </div>
+    </div>
 
-  <p class="result"></p>
-  <button>Play Again</button>
+    <div class="game">
+        <p class="turn">Play your Move</p>
+        <div class="slate">
+            <div class="play" data-index="0"></div>
+            <div class="play" data-index="1"></div>
+            <div class="play" data-index="2"></div>
+            <div class="play" data-index="3"></div>
+            <div class="play" data-index="4"></div>
+            <div class="play" data-index="5"></div>
+            <div class="play" data-index="6"></div>
+            <div class="play" data-index="7"></div>
+            <div class="play" data-index="8"></div>
+        </div>
 
-  <script>
-    let board = ["", "", "", "", "", "", "", "", ""];
-    let tiles = document.querySelectorAll(".play");
-    let currentPlayer = "X";
-    let gameOver = false;
-    let resultText = document.querySelector(".result");
-    let turnText = document.querySelector(".turn");
-    let restartBtn = document.querySelector("button");
-    let line = document.querySelector(".line");
+        <p class="result"></p>
+        <p class="tease"></p>
+        <div class="game-buttons">
+            <button onclick="playAgain()">Play Again</button>
+            <button onclick="mainMenu()">Main Menu</button>
+        </div>
+    </div>
 
-    turnText.textContent = `Turn: ${currentPlayer}`;
+    <div class="footer">
+        <p>Developed with ❤️ | Tic Tac Toe v1.0</p>
+    </div>
 
-    for (let i = 0; i < tiles.length; i++) {
-      tiles[i].addEventListener("click", function () {
-        if (board[i] === "" && !gameOver && currentPlayer === "X") {
-          makeMove(i, "X", tiles[i]);
-
-          if (checkWin("X")) {
-            resultText.textContent = "You win! 🎉";
-            gameOver = true;
-            return;
-          }
-
-          if (isDraw()) {
-            resultText.textContent = "It's a draw!";
-            gameOver = true;
-            return;
-          }
-
-          currentPlayer = "O";
-          turnText.textContent = `Turn: ${currentPlayer}`;
-
-          setTimeout(aiMove, 400);
+    <script>
+        // Game state variables
+        let board = ["", "", "", "", "", "", "", "", ""];
+        let currentPlayer = "X";
+        let gameOver = false;
+        let isMultiplayer = false;
+        let player1Name = "Player 1";
+        let player2Name = "Player 2";
+        let aiPlayer = "O";
+        
+        // DOM Elements
+        const tiles = document.querySelectorAll(".play");
+        const turnText = document.querySelector(".turn");
+        const resultText = document.querySelector(".result");
+        const teaseBox = document.querySelector(".tease");
+        const selectScreen = document.querySelector(".select");
+        const gameScreen = document.querySelector(".game");
+        const startScreenSingle = document.querySelector(".startScreen");
+        const startScreenMulti = document.querySelector(".mStartScreen");
+        const inputSection = document.querySelector(".input");
+        const nameInput = document.getElementById("name");
+        const name1Input = document.getElementById("name1");
+        const name2Input = document.getElementById("name2");
+        const singleBtn = document.querySelector(".single");
+        const doubleBtn = document.querySelector(".double");
+        
+        // Initialize game
+        initGame();
+        
+        function initGame() {
+            // Add event listeners to mode buttons
+            singleBtn.addEventListener("click", () => showStartScreen(false));
+            doubleBtn.addEventListener("click", () => showStartScreen(true));
+            
+            // Add event listeners to tiles
+            tiles.forEach(tile => {
+                tile.addEventListener("click", tileClicked);
+            });
+            
+            // Set initial state
+            selectScreen.style.display = "flex";
+            inputSection.style.display = "none";
+            gameScreen.style.display = "none";
         }
-      });
-    }
-
-    function aiMove() {
-      if (gameOver) return;
-
-      let emptyIndices = [];
-      for (let i = 0; i < board.length; i++) {
-        if (board[i] === "") {
-          emptyIndices.push(i);
+        
+        function showStartScreen(multiplayer) {
+            isMultiplayer = multiplayer;
+            selectScreen.style.display = "none";
+            
+            if (multiplayer) {
+                startScreenMulti.style.display = "flex";
+                startScreenSingle.style.display = "none";
+            } else {
+                startScreenSingle.style.display = "flex";
+                startScreenMulti.style.display = "none";
+            }
+            
+            inputSection.style.display = "block";
         }
-      }
-
-      if (emptyIndices.length === 0) return;
-
-      let randIndex = emptyIndices[Math.floor(Math.random() * emptyIndices.length)];
-      makeMove(randIndex, "O", tiles[randIndex]);
-
-      if (checkWin("O")) {
-        resultText.textContent = "AI wins! 🤖";
-        gameOver = true;
-        return;
-      }
-
-      if (isDraw()) {
-        resultText.textContent = "It's a draw!";
-        gameOver = true;
-        return;
-      }
-
-      currentPlayer = "X";
-      turnText.textContent = `Turn: ${currentPlayer}`;
-    }
-
-    function makeMove(index, player, tile) {
-      board[index] = player;
-      tile.textContent = player;
-    }
-
-    function checkWin(player) {
-      const winCombos = [
-        [0, 1, 2], [3, 4, 5], [6, 7, 8],
-        [0, 3, 6], [1, 4, 7], [2, 5, 8],
-        [0, 4, 8], [2, 4, 6]
-      ];
-
-      for (let i = 0; i < winCombos.length; i++) {
-        let [a, b, c] = winCombos[i];
-        if (board[a] === player && board[b] === player && board[c] === player) {
-          drawLine(i);
-          return true;
+        
+        function showSelectScreen() {
+            selectScreen.style.display = "flex";
+            inputSection.style.display = "none";
+            gameScreen.style.display = "none";
         }
-      }
-      return false;
-    }
-
-    function isDraw() {
-      for (let i = 0; i < board.length; i++) {
-        if (board[i] === "") {
-          return false;
+        
+        function startGame() {
+            // Get player names
+            if (isMultiplayer) {
+                player1Name = name1Input.value || "Player 1";
+                player2Name = name2Input.value || "Player 2";
+            } else {
+                player1Name = nameInput.value || "Player";
+                player2Name = "Computer";
+            }
+            
+            // Hide input, show game
+            inputSection.style.display = "none";
+            gameScreen.style.display = "flex";
+            
+            // Reset game state
+            resetGame();
+            updateTurnText();
         }
-      }
-      return true;
-    }
-
-    function drawLine(combo) {
-      const positions = {
-        0: { top: '157px', left: 'calc(50% - 144px)', rotate: '0deg' },
-        1: { top: '233px', left: 'calc(50% - 144px)', rotate: '0deg' },
-        2: { top: '309px', left: 'calc(50% - 144px)', rotate: '0deg' },
-        3: { top: '233px', left: 'calc(50% - 144px)', rotate: '90deg' },
-        4: { top: '233px', left: 'calc(50%)', rotate: '90deg' },
-        5: { top: '233px', left: 'calc(50% + 144px)', rotate: '90deg' },
-        6: { top: '233px', left: 'calc(50% - 144px)', rotate: '45deg' },
-        7: { top: '233px', left: 'calc(50% - 144px)', rotate: '-45deg' }
-      };
-
-      line.style.top = positions[combo].top;
-      line.style.left = positions[combo].left;
-      line.style.transform = `rotate(${positions[combo].rotate}) scaleX(1)`;
-    }
-
-    restartBtn.addEventListener("click", () => {
-      board = ["", "", "", "", "", "", "", "", ""];
-      for (let i = 0; i < tiles.length; i++) {
-        tiles[i].textContent = "";
-      }
-      currentPlayer = "X";
-      gameOver = false;
-      resultText.textContent = "";
-      turnText.textContent = `Turn: ${currentPlayer}`;
-      line.style.transform = "scaleX(0)";
-    });
-  </script>
+        
+        function resetGame() {
+            board = ["", "", "", "", "", "", "", "", ""];
+            currentPlayer = "X";
+            gameOver = false;
+            resultText.textContent = "";
+            teaseBox.textContent = "";
+            
+            // Clear board visually
+            tiles.forEach(tile => {
+                tile.textContent = "";
+                tile.classList.remove("x-move", "o-move");
+            });
+        }
+        
+        function updateTurnText() {
+            if (gameOver) return;
+            
+            const playerName = currentPlayer === "X" ? player1Name : player2Name;
+            const symbol = currentPlayer === "X" ? "X" : "O";
+            
+            if (!isMultiplayer && currentPlayer === aiPlayer) {
+                turnText.innerHTML = `${playerName}'s Turn <i class="fas fa-robot"></i>`;
+                turnText.className = "turn o-move";
+                
+                // AI makes its move after a short delay
+                setTimeout(makeAIMove, 800);
+            } else {
+                turnText.innerHTML = `${playerName}'s Turn (${symbol})`;
+                turnText.className = currentPlayer === "X" ? "turn x-move" : "turn o-move";
+            }
+        }
+        
+        function tileClicked(e) {
+            if (gameOver) return;
+            
+            // Prevent human from clicking during AI's turn
+            if (!isMultiplayer && currentPlayer === aiPlayer) return;
+            
+            const index = parseInt(e.target.dataset.index);
+            
+            if (board[index] === "") {
+                makeMove(index, currentPlayer);
+                
+                // Check for win or draw
+                checkGameState();
+                
+                // Switch player if game is not over
+                if (!gameOver) {
+                    currentPlayer = currentPlayer === "X" ? "O" : "X";
+                    updateTurnText();
+                }
+            }
+        }
+        
+        function makeMove(index, player) {
+            board[index] = player;
+            tiles[index].textContent = player;
+            tiles[index].classList.add(player === "X" ? "x-move" : "o-move");
+        }
+        
+        function makeAIMove() {
+            if (gameOver) return;
+            
+            // Simple AI strategy: 
+            // 1. Try to win
+            // 2. Block opponent
+            // 3. Choose center
+            // 4. Choose corner
+            // 5. Choose random
+            
+            let move = -1;
+            
+            // Try to win
+            move = findWinningMove(aiPlayer);
+            if (move === -1) {
+                // Block opponent
+                move = findWinningMove("X");
+            }
+            
+            if (move === -1) {
+                // Choose center if available
+                if (board[4] === "") {
+                    move = 4;
+                }
+            }
+            
+            if (move === -1) {
+                // Choose a random corner
+                const corners = [0, 2, 6, 8];
+                const availableCorners = corners.filter(index => board[index] === "");
+                
+                if (availableCorners.length > 0) {
+                    move = availableCorners[Math.floor(Math.random() * availableCorners.length)];
+                }
+            }
+            
+            if (move === -1) {
+                // Choose a random available move
+                const availableMoves = board.map((cell, index) => cell === "" ? index : -1)
+                                            .filter(index => index !== -1);
+                
+                if (availableMoves.length > 0) {
+                    move = availableMoves[Math.floor(Math.random() * availableMoves.length)];
+                }
+            }
+            
+            if (move !== -1) {
+                makeMove(move, aiPlayer);
+                
+                // Check game state after AI move
+                checkGameState();
+                
+                // Switch back to human player if game continues
+                if (!gameOver) {
+                    currentPlayer = "X";
+                    updateTurnText();
+                }
+            }
+        }
+        
+        function findWinningMove(player) {
+            const winCombos = [
+                [0, 1, 2], [3, 4, 5], [6, 7, 8], // rows
+                [0, 3, 6], [1, 4, 7], [2, 5, 8], // columns
+                [0, 4, 8], [2, 4, 6]             // diagonals
+            ];
+            
+            for (const combo of winCombos) {
+                const [a, b, c] = combo;
+                
+                // If two cells are occupied by player and the third is empty
+                if (board[a] === player && board[b] === player && board[c] === "") return c;
+                if (board[a] === player && board[c] === player && board[b] === "") return b;
+                if (board[b] === player && board[c] === player && board[a] === "") return a;
+            }
+            
+            return -1;
+        }
+        
+        function checkGameState() {
+            // Check for win
+            const winner = checkWin();
+            if (winner) {
+                gameOver = true;
+                if (winner === "X") {
+                    resultText.textContent = isMultiplayer ? `${player1Name} Wins!` : "You Win!";
+                    resultText.className = "result x-move";
+                } else {
+                    resultText.textContent = isMultiplayer ? `${player2Name} Wins!` : "Computer Wins!";
+                    resultText.className = "result o-move";
+                }
+                teaseBox.textContent = "Great game!";
+                return;
+            }
+            
+            // Check for draw
+            if (isDraw()) {
+                gameOver = true;
+                resultText.textContent = "It's a Draw!";
+                teaseBox.textContent = "Try again!";
+                return;
+            }
+        }
+        
+        function checkWin() {
+            const winCombos = [
+                [0, 1, 2], [3, 4, 5], [6, 7, 8], // rows
+                [0, 3, 6], [1, 4, 7], [2, 5, 8], // columns
+                [0, 4, 8], [2, 4, 6]             // diagonals
+            ];
+            
+            for (const combo of winCombos) {
+                const [a, b, c] = combo;
+                if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+                    return board[a];
+                }
+            }
+            
+            return null;
+        }
+        
+        function isDraw() {
+            return board.every(cell => cell !== "");
+        }
+        
+        function playAgain() {
+            resetGame();
+            updateTurnText();
+        }
+        
+        function mainMenu() {
+            gameScreen.style.display = "none";
+            selectScreen.style.display = "flex";
+        }
+        
+        // Add a little fun to the game
+        const teasers = [
+            "Can you beat the computer?",
+            "Three in a row wins!",
+            "Watch out for the corners!",
+            "The center is a powerful position!",
+            "Block your opponent!",
+            "Can you achieve a perfect game?"
+        ];
+        
+        // Show random teaser
+        teaseBox.textContent = teasers[Math.floor(Math.random() * teasers.length)];
+    </script>
 </body>
 </html>

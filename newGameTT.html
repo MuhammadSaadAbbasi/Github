@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic Tac Toe</title>
+    <style>
+         * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Roboto', sans-serif;
+    }
+
+    body {
+     background-image: linear-gradient(to top, #000000, #130809, #1e100e, #26160f, #2e1c0f);
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      /* justify-content: center; */
+      padding: 5rem;
+    }
+    h1{
+      border: red 2px solid;
+    }
+    .startScreen{
+      margin-top: 5rem;
+      /* border: red 2px solid; */
+    }
+    
+    input {
+      height: 2.7rem;
+      width: 15rem;
+      border-radius: 12px;
+      border-color: transparent;
+      margin: 0 0.6rem;
+      padding: 0.7rem 1rem;
+      border-radius: 1rem;
+      background-color: #2e1c0f;
+      color: #ffdead;
+      border: none;
+      width: 300px;
+      font-size: 1rem;
+      transition: box-shadow 0.3s ease;
+    }
+    input:focus {
+    outline: none;
+    box-shadow: 0 0 10px #ff800080;
+    }
+     button{
+      height: 2.7rem;
+      width: 10rem;
+      border-radius: 14px;
+      font-weight: bold;
+      background-color: 	rgb(183, 91, 20);
+      border-color: transparent;
+      cursor: pointer;
+      transition: transform 1s ease;
+      color: #ffdead;
+      font-size: 110%;
+      
+      
+    }
+    button:hover{
+    
+      transform: scale(1.07);
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.387);
+
+    }
+    .game,.startScreen,.mStartScreen{ 
+      display: none;
+      margin-top: 4rem;
+    }
+    .mStartScreen{
+     flex-direction: column;
+     gap: 1rem;
+    }
+    .mStartScreen button{
+      margin-left: auto;
+      margin-right: 2%;
+    }
+    
+    
+    .select{
+     border: 1px red solid;
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     gap: 2rem;
+     width: 100%;
+     height: 70vh;
+    }
+
+    
+   .single,.double{
+   
+    width: 14rem;
+    height: 12rem;
+    background-position: center;
+    background-size: cover;
+    background-color: #6b4713;
+    transition: background-color 0.9s ease;
+    transition: transform 1s ease; 
+  }
+   .single:hover,.double:hover{
+    background-color: #362105;
+
+  }
+   .single{
+    background-image: url(/pics/s.png);}
+    .double{
+      background-image: url(/pics/d.png);
+    }
+  
+
+    .slate{
+        display: grid;
+        grid-template-columns: repeat(3,6rem);
+        gap: 0.5rem;
+        justify-content: center;
+    }
+    .slate div{
+        background-image: url(/pics/wooden.jpg);
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-position: center;
+        border-radius: 8px;
+        width: 6rem;
+        height: 6rem;
+        border: 2px solid #d6a561;
+        font-size: 2.5rem;
+        color: #fff;
+        text-align: center;
+        /* line-height: 6rem; */
+        cursor: pointer;
+        transition: transform 0.2s ease;
+        filter: grayscale(39%);
+    }
+    .slate div:hover{
+     transform: scale(1.05);
+    }
+
+    </style>
+</head>
+<body>
+    <h1>Tic Tac Toe</h1>
+
+  
+  <div class="select">
+    <button class="single">
+      <i></i>
+      <h2>Single Mode</h2>
+      <p>Play Against AI</p>
+    </button>
+    <button class="double" >
+      <i></i>
+      <h2>Multiplayer Mode</h2>
+      <p>Play Against Friend</p>
+    </button>
+  </div>
+
+  <div class="input">
+  <div class="startScreen">
+    <div class="input-screen">
+      <label for="name">Enter Name :</label>
+    <input id="name" type="text" placeholder="Enter Player Name">
+  </div>
+    <button onclick="start()">Start Game</button>
+    <button onclick="mainScreen()">Back</button>
+  </div>
+
+  <div class="mStartScreen">
+    <label for="name1">Player 1 (X) :</label>
+    <input id="name1" type="text" placeholder="Enter First Player ">
+    <label for="name1">Player 2 (O) :</label>
+    <input id="name2" type="text" placeholder="Enter Second Player ">
+    <button onclick="start()">Start Game</button>
+    <button onclick="mainMenu()">Back</button>
+  </div>
+</div>
+
+  <div class="game">
+  <p class="turn">Play your Move</p> 
+  <div class="slate">
+    <div class="play" data-index="0"></div>
+    <div class="play" data-index="1"></div>
+    <div class="play" data-index="2"></div>
+    <div class="play" data-index="3"></div>
+    <div class="play" data-index="4"></div>
+    <div class="play" data-index="5"></div>
+    <div class="play" data-index="6"></div>
+    <div class="play" data-index="7"></div>
+    <div class="play" data-index="8"></div>
+  </div>
+
+<p class="result"></p>
+<div class="tease"></div>
+ <button onclick="playAgain()">Play Again</button>
+ <button onclick="mainMenu()">Main Menu</button>   
+</div>
+<script>
+// ========== GAME STATE ========== //
+let board = ["", "", "", "", "", "", "", "", ""];
+let currentPlayer = "X";
+let gameOver = false;
+let isMultiplayer = false;
+let playerName = "Player 1";
+let mPlayerName = "Player 2";
+
+// ========== DOM ELEMENTS ========== //
+const tiles = document.querySelectorAll(".play");
+const turnText = document.querySelector(".turn");
+const resultText = document.querySelector(".result");
+const selectScreen = document.querySelector(".select");
+const gameScreen = document.querySelector(".game");
+const startScreenSingle = document.querySelector(".startScreen");
+const startScreenMulti = document.querySelector(".mStartScreen");
+const inputSection = document.querySelector(".input");
+const teaseBox = document.querySelector(".tease");
+const nameInput = document.getElementById("name");
+const name1Input = document.getElementById("name1");
+const name2Input = document.getElementById("name2");
+const singleBtn = document.querySelector(".single");
+const multiBtn = document.querySelector(".double");
+
+// ========== INITIALIZATION ========== //
+initGame();
+
+// ========== EVENT LISTENERS ========== //
+singleBtn.addEventListener("click", () => {
+  selectScreen.style.display = "none";
+  inputSection.style.display = "flex";
+  startScreenSingle.style.display = "flex";
+  isMultiplayer = false;
+});
+
+multiBtn.addEventListener("click", () => {
+  selectScreen.style.display = "none";
+  inputSection.style.display = "flex";
+  startScreenMulti.style.display = "flex";
+  isMultiplayer = true;
+});
+
+// ========== GAME FUNCTION DECLARATIONS ========== //
+function assignName() {
+  if (isMultiplayer) {
+    playerName = name1Input.value || "Player 1";
+    mPlayerName = name2Input.value || "Player 2";
+  } else {
+    playerName = nameInput.value || "Player 1";
+  }
+  turnText.textContent = `${playerName}'s turn`;
+}
+
+function start() {
+  assignName();
+  inputSection.style.display = "none";
+  gameScreen.style.display = "flex";
+  turnText.textContent = isMultiplayer ? 
+    `${playerName}'s turn` : 
+    `${playerName} vs AI`;
+}
+
+function mainMenu() {
+  playAgain();
+  selectScreen.style.display = "flex";
+  gameScreen.style.display = "none";
+
+}
+
+function initGame() {
+  tiles.forEach((tile, index) => {
+    tile.addEventListener("click", () => {
+      if (gameOver || (!isMultiplayer && currentPlayer === "O")) return;
+      if (tile.textContent === "") {
+        move(tile, index);
+      }
+      else return;
+        checkWin();
+        turnChange();
+        if(!isMultiplayer){
+        aiTurn();
+        checkWin();
+        turnChange();
+        }
+    });
+  });
+}
+
+function move(tile, index) {
+  if (gameOver) return;
+  
+  tile.textContent = currentPlayer;
+  board[index] = currentPlayer;
+  
+}
+
+function turnChange() {
+  currentPlayer = currentPlayer === "X" ? "O" : "X";
+  
+  if (isMultiplayer) {
+    turnText.textContent = currentPlayer === "X" ? 
+      `${playerName}'s turn` : 
+      `${mPlayerName}'s turn`;
+  } else {
+    turnText.textContent = currentPlayer === "X" ? 
+      `${playerName}'s turn` : 
+      "AI's turn";
+  }
+}
+
+function checkWin() {
+  const winConditions = [
+    [0, 1, 2], [3, 4, 5], [6, 7, 8],
+    [0, 3, 6], [1, 4, 7], [2, 5, 8],
+    [0, 4, 8], [2, 4, 6]
+  ];
+
+  for (const condition of winConditions) {
+    const [a, b, c] = condition;
+    if (board[a] === currentPlayer && board[b] === currentPlayer && board[c] === currentPlayer) {
+      gameOver = true;
+      return true;
+    }
+    
+  }
+  return false;
+}
+
+function checkDraw() {
+  return !board.includes("") && !checkWin();
+
+}
+
+function aiTurn() {
+  let emptyBoard = [];
+  for(let i = 0 ; i < board.length ; i++){
+    if(board[i]==""){
+      emptyBoard.push(i);
+    }
+  }
+   let key = findWinningMove("O");
+   if(key !== -1 && board[key]==""){
+      move(tiles[key],key);
+    return;
+   }
+   key = findWinningMove("X");
+   if(key !== -1 && board[key]==""){
+    move(tiles[key],key);
+    return;
+   }
+   else if(key==-1 && board[4]==""){
+    move(tiles[4],4);
+    return;
+   }
+  const randomIndex = Math.floor(Math.random() * emptyBoard.length);
+  const randomMove = emptyBoard[randomIndex];
+  move(tiles[randomMove], randomMove);
+  return;
+}
+  
+
+
+function findWinningMove(player) {
+  const winConditions = [
+    [0,1,2], [3,4,5], [6,7,8],
+    [0,3,6], [1,4,7], [2,5,8],
+    [0,4,8], [2,4,6]
+  ];
+  
+  for (const condition of winConditions) {
+    const [a, b, c] = condition;
+    if (board[a] === player && board[b] === player && board[c] === "") return c;
+    if (board[a] === player && board[c] === player && board[b] === "") return b;
+    if (board[b] === player && board[c] === player && board[a] === "") return a;
+  }
+  
+  return -1;
+}
+
+
+function playAgain() {
+  board = ["","","","","","","","",""]
+  for(let i = 0 ; i < tiles.length ; i++){
+    tiles[i].textContent = "";
+    gameOver=false;
+  }
+}
+
+</script>
